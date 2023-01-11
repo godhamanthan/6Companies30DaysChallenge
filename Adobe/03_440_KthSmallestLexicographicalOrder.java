@@ -1,16 +1,28 @@
 class Solution {
-  public boolean increasingTriplet(int[] nums) {
-    int first = Integer.MAX_VALUE;
-    int second = Integer.MAX_VALUE;
+  public int findKthNumber(int n, int k) {
+    long currNum = 1;
 
-    for (final int num : nums)
-      if (num <= first)
-        first = num;
-      else if (num <= second) // First < num <= second
-        second = num;
-      else // First < second < num (third)
-        return true;
+    for (int i = 1; i < k;) {
+      long gap = getGap(currNum, currNum + 1, n);
+      if (i + gap <= k) {
+        i += gap;
+        ++currNum;
+      } else {
+        ++i;
+        currNum *= 10;
+      }
+    }
 
-    return false;
+    return (int) currNum;
+  }
+
+  private long getGap(long a, long b, long n) {
+    long gap = 0;
+    while (a <= n) {
+      gap += Math.min(n + 1, b) - a;
+      a *= 10;
+      b *= 10;
+    }
+    return gap;
   }
 }
