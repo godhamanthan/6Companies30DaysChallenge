@@ -1,43 +1,35 @@
 class Solution {
-     public static int[] smallestTrimmedNumbers(String[] nums, int[][] queries) {
-        int resultSize = queries.length;
-        int[] result = new int[resultSize];
-        long[] tempArray = new long[nums.length];
-        String[] numsCopy = new String[nums.length];
-        int k = 0;
-        while(k < resultSize){
-            for(int m = 0; m < nums.length; m++){
-                numsCopy[m] = nums[m];
+    public int[] smallestTrimmedNumbers(String[] nums, int[][] queries) {
+
+        if (nums.length == 0)
+            return new int[0];
+
+        int[] result = new int[queries.length];
+        int strLen = nums[0].length();
+        int[] index = new int[1];
+		
+        PriorityQueue<Integer> queue = new PriorityQueue<>((a, b) -> {
+            for (int i = index[0]; i < strLen; i++) {
+                if (nums[a].charAt(i) != nums[b].charAt(i))
+                    return nums[b].charAt(i) - nums[a].charAt(i);
             }
-            int trimSize = queries[k][1];
-            for(int i = 0; i < nums.length; i++){
-                numsCopy[i] = trimString(numsCopy[i], trimSize);
-                tempArray[i] = Long.parseLong(numsCopy[i]);
+
+            return b - a;
+        });
+
+        for (int i = 0; i < queries.length; i++) {
+            index[0] = strLen - queries[i][1];
+            queue.clear();
+
+            for (int j = 0; j < nums.length; j++) {
+                queue.add(j);
+                if (queue.size() > queries[i][0])
+                    queue.poll();
             }
-            result[k] = findKthMinIndex(tempArray, queries[k][0]);
-            k++;
+
+            result[i] = queue.poll();
         }
+
         return result;
-    }
-
-    private static String trimString(String str, int trimSize) {
-        int strSize = str.length();
-        return str.substring(strSize-trimSize);
-    }
-
-    private static int findKthMinIndex(long[] arr, int k){
-        long[] arrCopy = new long[arr.length];
-        for(int i = 0; i < arr.length; i++){
-            arrCopy[i] = arr[i];
-        }
-        Arrays.sort(arrCopy);
-        long kthMin = arrCopy[k-1];
-        int kthMinIndex = 0;
-        for(int j = 0; j < arr.length; j++){
-            if(arr[j] == kthMin){
-                kthMinIndex = j;
-            }
-        }
-        return kthMinIndex;
     }
 }
